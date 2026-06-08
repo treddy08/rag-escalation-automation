@@ -35,8 +35,8 @@ ocp4_workload_rag_escalation_workbench_storage_size: 20Gi
 # =============================================================================
 ocp4_workload_rag_escalation_workbench_cpu_request: "2"
 ocp4_workload_rag_escalation_workbench_cpu_limit: "8"
-ocp4_workload_rag_escalation_workbench_memory_request: 16Gi
-ocp4_workload_rag_escalation_workbench_memory_limit: 24Gi
+ocp4_workload_rag_escalation_workbench_memory_request: 10Gi
+ocp4_workload_rag_escalation_workbench_memory_limit: 14Gi
 ocp4_workload_rag_escalation_workbench_gpu_count: "1"
 
 # =============================================================================
