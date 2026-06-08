@@ -39,6 +39,15 @@
   delay: 10
   failed_when: false
 
+- name: Remove GPU hardware profile
+  kubernetes.core.k8s:
+    state: absent
+    api_version: infrastructure.opendatahub.io/v1
+    kind: HardwareProfile
+    name: gpu-profile
+    namespace: redhat-ods-applications
+  failed_when: false
+
 - name: Log removal completion
   debug:
     msg: "RAG Escalation workbench removal complete"
