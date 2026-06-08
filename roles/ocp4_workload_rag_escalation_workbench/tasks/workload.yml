@@ -37,23 +37,6 @@
     state: present
     definition: "{{ lookup('template', 'notebook.yml.j2') | from_yaml }}"
 
-# Wait for ready
-- name: Wait for Notebook to be ready
-  kubernetes.core.k8s_info:
-    api_version: kubeflow.org/v1
-    kind: Notebook
-    name: rag-escalation-workbench
-    namespace: "{{ ocp4_workload_rag_escalation_workbench_namespace }}"
-  register: r_notebook
-  until:
-  - r_notebook.resources | length > 0
-  - r_notebook.resources[0].status is defined
-  - r_notebook.resources[0].status.conditions is defined
-  - r_notebook.resources[0].status.conditions | selectattr('type', 'equalto', 'Ready') | list | length > 0
-  - (r_notebook.resources[0].status.conditions | selectattr('type', 'equalto', 'Ready') | list)[0].status == 'True'
-  retries: "{{ (ocp4_workload_rag_escalation_workbench_ready_timeout | int / 10) | int }}"
-  delay: 10
-
 # Export user data
 - name: Set workbench URL
   set_fact:
