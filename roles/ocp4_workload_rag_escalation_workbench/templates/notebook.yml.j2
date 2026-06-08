@@ -8,8 +8,7 @@ metadata:
     app: rag-escalation-workbench
     opendatahub.io/dashboard: "true"
   annotations:
-    notebooks.opendatahub.io/inject-oauth: "true"
-    notebooks.opendatahub.io/oauth-logout-url: https://console-openshift-console.{{ openshift_cluster_ingress_domain }}/oauth/sign_out
+    notebooks.opendatahub.io/inject-auth: "true"
 spec:
   template:
     spec:
