@@ -18,6 +18,17 @@ metadata:
 spec:
   template:
     spec:
+      # Toleration for GPU nodes
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Equal
+        value: "true"
+        effect: NoSchedule
+
+      # Node selector - target tenant's GPU node
+      nodeSelector:
+        tenant: {{ ocp4_workload_rag_escalation_workbench_tenant_label }}
+
       # Init container: Clone git repo before Jupyter starts
       initContainers:
       - name: git-clone-repo
@@ -109,17 +120,6 @@ spec:
           mountPath: /opt/app-root/src
 
         workingDir: /opt/app-root/src/EscalationLab
-
-      # Toleration for GPU nodes
-      tolerations:
-      - key: nvidia.com/gpu
-        operator: Equal
-        value: "true"
-        effect: NoSchedule
-
-      # Node selector - target tenant's GPU node
-      nodeSelector:
-        tenant: {{ ocp4_workload_rag_escalation_workbench_tenant_label }}
 
       volumes:
       - name: notebook-storage
