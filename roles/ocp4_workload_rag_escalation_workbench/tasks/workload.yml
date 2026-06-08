@@ -61,7 +61,7 @@
       https://rag-escalation-workbench-{{ ocp4_workload_rag_escalation_workbench_namespace }}.{{ openshift_cluster_ingress_domain }}
 
 - name: Export workbench URL to user data
-  agnosticd_user_info:
+  agnosticd.core.agnosticd_user_info:
     data:
       rag_escalation_workbench_url: "{{ ocp4_workload_rag_escalation_workbench_url }}"
       rag_escalation_workbench_namespace: "{{ ocp4_workload_rag_escalation_workbench_namespace }}"
