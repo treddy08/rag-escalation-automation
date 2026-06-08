@@ -16,15 +16,12 @@ spec:
       # Init container: Clone git repo before Jupyter starts
       initContainers:
       - name: git-clone-repo
-        image: registry.redhat.io/ubi9/ubi-minimal:latest
+        image: {{ ocp4_workload_rag_escalation_workbench_notebook_image }}
         command:
         - /bin/sh
         - -c
         - |
           set -e
-          echo "Installing git..."
-          microdnf install -y git
-
           TARGET_DIR="/opt/app-root/src/EscalationLab"
 
           if [ ! -d "${TARGET_DIR}" ]; then
@@ -34,18 +31,16 @@ spec:
               {{ ocp4_workload_rag_escalation_workbench_git_repo }} \
               "${TARGET_DIR}"
             echo "Repository cloned successfully to ${TARGET_DIR}"
-{% if ocp4_workload_rag_escalation_workbench_pip_packages | length > 0 %}
-
-            # Install additional pip packages if requirements.txt doesn't exist
-            if [ ! -f "${TARGET_DIR}/requirements.txt" ]; then
-              echo "Installing additional pip packages..."
-              echo "{{ ocp4_workload_rag_escalation_workbench_pip_packages | join('\n') }}" > /tmp/extra-requirements.txt
-              echo "Created extra requirements file"
-            fi
-{% endif %}
           else
             echo "Repository already exists at ${TARGET_DIR}, skipping clone"
           fi
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: "1"
+            memory: 512Mi
         volumeMounts:
         - name: notebook-storage
           mountPath: /opt/app-root/src
