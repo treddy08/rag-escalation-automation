@@ -46,14 +46,9 @@ spec:
           else
             echo "Repository already exists at ${TARGET_DIR}, skipping clone"
           fi
-
-          # Set ownership
-          chown -R 1000:100 /opt/app-root/src/
         volumeMounts:
         - name: notebook-storage
           mountPath: /opt/app-root/src
-        securityContext:
-          runAsUser: 0
 
       # Main Jupyter container
       containers:
