@@ -1,14 +1,18 @@
 ---
 # =============================================================================
-# REQUIRED Variables (must be passed in)
+# Namespace Configuration
 # =============================================================================
-# ocp4_workload_rag_escalation_workbench_namespace: ""        # REQUIRED - Target namespace (Data Science Project)
-# ocp4_workload_rag_escalation_workbench_git_repo: ""         # REQUIRED - Git repository URL to clone
-# ocp4_workload_rag_escalation_workbench_tenant_label: ""     # REQUIRED - Tenant label value (e.g., "user-abc123")
+ocp4_workload_rag_escalation_workbench_namespace: ""
+
+# =============================================================================
+# Tenant Label Configuration
+# =============================================================================
+ocp4_workload_rag_escalation_workbench_tenant_label: ""
 
 # =============================================================================
 # Git Repository Configuration
 # =============================================================================
+ocp4_workload_rag_escalation_workbench_git_repo: "https://github.com/FrankLaVigne/EscalationLab"
 ocp4_workload_rag_escalation_workbench_git_branch: "main"
 
 # =============================================================================
