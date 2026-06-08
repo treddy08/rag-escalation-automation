@@ -41,7 +41,7 @@
 - name: Set workbench URL
   set_fact:
     ocp4_workload_rag_escalation_workbench_url: >-
-      https://rag-escalation-workbench-{{ ocp4_workload_rag_escalation_workbench_namespace }}.{{ openshift_cluster_ingress_domain }}
+      https://rh-ai.{{ openshift_cluster_ingress_domain }}/notebook/{{ ocp4_workload_rag_escalation_workbench_namespace }}/rag-escalation-workbench
 
 - name: Export workbench URL to user data
   agnosticd.core.agnosticd_user_info:
