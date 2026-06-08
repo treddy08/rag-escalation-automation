@@ -1,0 +1,69 @@
+---
+# Validate required variables
+- name: Validate required variables are defined
+  assert:
+    that:
+    - ocp4_workload_rag_escalation_workbench_namespace is defined
+    - ocp4_workload_rag_escalation_workbench_namespace | length > 0
+    - ocp4_workload_rag_escalation_workbench_git_repo is defined
+    - ocp4_workload_rag_escalation_workbench_git_repo | length > 0
+    - ocp4_workload_rag_escalation_workbench_tenant_label is defined
+    - ocp4_workload_rag_escalation_workbench_tenant_label | length > 0
+    fail_msg: "Required variables must be set: namespace, git_repo, tenant_label"
+
+# Get cluster ingress domain
+- name: Get cluster ingress domain
+  kubernetes.core.k8s_info:
+    api_version: config.openshift.io/v1
+    kind: Ingress
+    name: cluster
+  register: r_ingress
+
+- name: Set ingress domain fact
+  set_fact:
+    openshift_cluster_ingress_domain: "{{ r_ingress.resources[0].spec.domain }}"
+  when:
+  - r_ingress.resources | length > 0
+  - openshift_cluster_ingress_domain is not defined
+
+# Create resources
+- name: Create PVC for workbench storage
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'pvc.yml.j2') | from_yaml }}"
+
+- name: Create Jupyter workbench with git repo pre-loaded
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'notebook.yml.j2') | from_yaml }}"
+
+# Wait for ready
+- name: Wait for Notebook to be ready
+  kubernetes.core.k8s_info:
+    api_version: kubeflow.org/v1
+    kind: Notebook
+    name: rag-escalation-workbench
+    namespace: "{{ ocp4_workload_rag_escalation_workbench_namespace }}"
+  register: r_notebook
+  until:
+  - r_notebook.resources | length > 0
+  - r_notebook.resources[0].status is defined
+  - r_notebook.resources[0].status.conditions is defined
+  - r_notebook.resources[0].status.conditions | selectattr('type', 'equalto', 'Ready') | list | length > 0
+  - (r_notebook.resources[0].status.conditions | selectattr('type', 'equalto', 'Ready') | list)[0].status == 'True'
+  retries: "{{ (ocp4_workload_rag_escalation_workbench_ready_timeout | int / 10) | int }}"
+  delay: 10
+
+# Export user data
+- name: Set workbench URL
+  set_fact:
+    ocp4_workload_rag_escalation_workbench_url: >-
+      https://rag-escalation-workbench-{{ ocp4_workload_rag_escalation_workbench_namespace }}.{{ openshift_cluster_ingress_domain }}
+
+- name: Export workbench URL to user data
+  agnosticd_user_info:
+    data:
+      rag_escalation_workbench_url: "{{ ocp4_workload_rag_escalation_workbench_url }}"
+      rag_escalation_workbench_namespace: "{{ ocp4_workload_rag_escalation_workbench_namespace }}"
+      rag_escalation_git_repo: "{{ ocp4_workload_rag_escalation_workbench_git_repo }}"
+  when: ocp4_workload_rag_escalation_workbench_export_user_data | bool

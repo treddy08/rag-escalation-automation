@@ -1,0 +1,4 @@
+---
+# Workload entry point
+- name: Deploy RAG Escalation workbench
+  import_tasks: workload.yml

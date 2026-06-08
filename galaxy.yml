@@ -1,0 +1,39 @@
+---
+namespace: agnosticd
+name: rag_escalation_automation
+version: 1.0.0
+readme: README.md
+
+authors:
+- Tyrell Reddy <treddy@redhat.com>
+
+description: >
+  Ansible collection for RAG Escalation Lab automation workloads.
+  Provides roles for deploying Data Science workbenches with pre-loaded
+  git repositories for AI/ML training labs.
+
+license:
+- Apache-2.0
+
+tags:
+- openshift
+- openshift-ai
+- rhoai
+- jupyter
+- notebook
+- workbench
+- ai
+- ml
+- rag
+- gpu
+
+repository: https://github.com/treddy08/rag-escalation-automation
+
+build_ignore:
+- "*.tar.gz"
+- ".git"
+- ".gitignore"
+- "*.swp"
+- "*.pyc"
+- "__pycache__"
+- ".DS_Store"

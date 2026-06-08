@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rag-escalation-workbench-pvc
+  namespace: {{ ocp4_workload_rag_escalation_workbench_namespace }}
+  labels:
+    app: rag-escalation-workbench
+    opendatahub.io/dashboard: "true"
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ ocp4_workload_rag_escalation_workbench_storage_size }}

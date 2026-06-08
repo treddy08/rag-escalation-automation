@@ -1,0 +1,47 @@
+---
+# =============================================================================
+# REQUIRED Variables (must be passed in)
+# =============================================================================
+# ocp4_workload_rag_escalation_workbench_namespace: ""        # REQUIRED - Target namespace (Data Science Project)
+# ocp4_workload_rag_escalation_workbench_git_repo: ""         # REQUIRED - Git repository URL to clone
+# ocp4_workload_rag_escalation_workbench_tenant_label: ""     # REQUIRED - Tenant label value (e.g., "user-abc123")
+
+# =============================================================================
+# Git Repository Configuration
+# =============================================================================
+ocp4_workload_rag_escalation_workbench_git_branch: "main"
+
+# =============================================================================
+# Notebook Image Configuration
+# =============================================================================
+# Standard RHOAI workbench image with Python 3.11
+ocp4_workload_rag_escalation_workbench_notebook_image: "quay.io/opendatahub/workbench-images:jupyter-datascience-ubi9-python-3.11-20250101"
+
+# Alternative images:
+# PyTorch with CUDA: quay.io/opendatahub/workbench-images:jupyter-pytorch-ubi9-python-3.11-20250101
+# TensorFlow with CUDA: quay.io/opendatahub/workbench-images:jupyter-tensorflow-ubi9-python-3.11-20250101
+
+# =============================================================================
+# Storage Configuration
+# =============================================================================
+ocp4_workload_rag_escalation_workbench_storage_size: 20Gi
+
+# =============================================================================
+# Resource Configuration
+# =============================================================================
+ocp4_workload_rag_escalation_workbench_cpu_request: "2"
+ocp4_workload_rag_escalation_workbench_cpu_limit: "8"
+ocp4_workload_rag_escalation_workbench_memory_request: 16Gi
+ocp4_workload_rag_escalation_workbench_memory_limit: 24Gi
+ocp4_workload_rag_escalation_workbench_gpu_count: "1"
+
+# =============================================================================
+# Additional Python Packages (optional)
+# =============================================================================
+ocp4_workload_rag_escalation_workbench_pip_packages: []
+
+# =============================================================================
+# Workload Control
+# =============================================================================
+ocp4_workload_rag_escalation_workbench_ready_timeout: 600
+ocp4_workload_rag_escalation_workbench_export_user_data: true

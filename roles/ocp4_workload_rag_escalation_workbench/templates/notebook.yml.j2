@@ -1,0 +1,132 @@
+---
+apiVersion: kubeflow.org/v1
+kind: Notebook
+metadata:
+  name: rag-escalation-workbench
+  namespace: {{ ocp4_workload_rag_escalation_workbench_namespace }}
+  labels:
+    app: rag-escalation-workbench
+    opendatahub.io/dashboard: "true"
+  annotations:
+    notebooks.opendatahub.io/inject-oauth: "true"
+    notebooks.opendatahub.io/oauth-logout-url: https://console-openshift-console.{{ openshift_cluster_ingress_domain }}/oauth/sign_out
+spec:
+  template:
+    spec:
+      # Init container: Clone git repo before Jupyter starts
+      initContainers:
+      - name: git-clone-repo
+        image: registry.redhat.io/ubi9/ubi-minimal:latest
+        command:
+        - /bin/sh
+        - -c
+        - |
+          set -e
+          echo "Installing git..."
+          microdnf install -y git
+
+          TARGET_DIR="/opt/app-root/src/EscalationLab"
+
+          if [ ! -d "${TARGET_DIR}" ]; then
+            echo "Cloning repository: {{ ocp4_workload_rag_escalation_workbench_git_repo }}"
+            git clone \
+              --branch {{ ocp4_workload_rag_escalation_workbench_git_branch }} \
+              {{ ocp4_workload_rag_escalation_workbench_git_repo }} \
+              "${TARGET_DIR}"
+            echo "Repository cloned successfully to ${TARGET_DIR}"
+{% if ocp4_workload_rag_escalation_workbench_pip_packages | length > 0 %}
+
+            # Install additional pip packages if requirements.txt doesn't exist
+            if [ ! -f "${TARGET_DIR}/requirements.txt" ]; then
+              echo "Installing additional pip packages..."
+              echo "{{ ocp4_workload_rag_escalation_workbench_pip_packages | join('\n') }}" > /tmp/extra-requirements.txt
+              echo "Created extra requirements file"
+            fi
+{% endif %}
+          else
+            echo "Repository already exists at ${TARGET_DIR}, skipping clone"
+          fi
+
+          # Set ownership
+          chown -R 1000:100 /opt/app-root/src/
+        volumeMounts:
+        - name: notebook-storage
+          mountPath: /opt/app-root/src
+        securityContext:
+          runAsUser: 0
+
+      # Main Jupyter container
+      containers:
+      - name: rag-escalation-workbench
+        image: {{ ocp4_workload_rag_escalation_workbench_notebook_image }}
+        imagePullPolicy: Always
+
+        env:
+        - name: JUPYTER_ENABLE_LAB
+          value: "yes"
+        - name: NOTEBOOK_ARGS
+          value: |-
+            --ServerApp.port=8888
+            --ServerApp.token=''
+            --ServerApp.password=''
+            --ServerApp.base_url=/notebook/{{ ocp4_workload_rag_escalation_workbench_namespace }}/rag-escalation-workbench
+            --ServerApp.quit_button=False
+
+        ports:
+        - containerPort: 8888
+          name: notebook-port
+          protocol: TCP
+
+        livenessProbe:
+          httpGet:
+            path: /notebook/{{ ocp4_workload_rag_escalation_workbench_namespace }}/rag-escalation-workbench/api
+            port: notebook-port
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 3
+
+        readinessProbe:
+          httpGet:
+            path: /notebook/{{ ocp4_workload_rag_escalation_workbench_namespace }}/rag-escalation-workbench/api
+            port: notebook-port
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 3
+
+        resources:
+          limits:
+            cpu: {{ ocp4_workload_rag_escalation_workbench_cpu_limit }}
+            memory: {{ ocp4_workload_rag_escalation_workbench_memory_limit }}
+            nvidia.com/gpu: {{ ocp4_workload_rag_escalation_workbench_gpu_count }}
+          requests:
+            cpu: {{ ocp4_workload_rag_escalation_workbench_cpu_request }}
+            memory: {{ ocp4_workload_rag_escalation_workbench_memory_request }}
+            nvidia.com/gpu: {{ ocp4_workload_rag_escalation_workbench_gpu_count }}
+
+        volumeMounts:
+        - name: notebook-storage
+          mountPath: /opt/app-root/src
+
+        workingDir: /opt/app-root/src/EscalationLab
+
+      # Toleration for GPU nodes
+      tolerations:
+      - key: nvidia.com/gpu
+        operator: Equal
+        value: "true"
+        effect: NoSchedule
+
+      # Node selector - target tenant's GPU node
+      nodeSelector:
+        tenant: {{ ocp4_workload_rag_escalation_workbench_tenant_label }}
+
+      volumes:
+      - name: notebook-storage
+        persistentVolumeClaim:
+          claimName: rag-escalation-workbench-pvc
