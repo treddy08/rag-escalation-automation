@@ -1,0 +1,33 @@
+---
+apiVersion: infrastructure.opendatahub.io/v1
+kind: HardwareProfile
+metadata:
+  name: gpu-profile
+  namespace: redhat-ods-applications
+  labels:
+    app.opendatahub.io/hardwareprofile: "true"
+  annotations:
+    opendatahub.io/description: GPU workbench profile with 1 NVIDIA GPU, up to 8 CPUs and 24 GiB memory
+    opendatahub.io/display-name: GPU Profile (1 GPU)
+    opendatahub.io/disabled: "false"
+    opendatahub.io/managed: "false"
+spec:
+  identifiers:
+  - identifier: cpu
+    displayName: CPU
+    resourceType: CPU
+    defaultCount: {{ ocp4_workload_rag_escalation_workbench_cpu_request | int }}
+    minCount: 2
+    maxCount: {{ ocp4_workload_rag_escalation_workbench_cpu_limit | int }}
+  - identifier: memory
+    displayName: Memory
+    resourceType: Memory
+    defaultCount: {{ ocp4_workload_rag_escalation_workbench_memory_request }}
+    minCount: {{ ocp4_workload_rag_escalation_workbench_memory_request }}
+    maxCount: {{ ocp4_workload_rag_escalation_workbench_memory_limit }}
+  - identifier: nvidia.com/gpu
+    displayName: NVIDIA GPU
+    resourceType: Accelerator
+    defaultCount: {{ ocp4_workload_rag_escalation_workbench_gpu_count | int }}
+    minCount: {{ ocp4_workload_rag_escalation_workbench_gpu_count | int }}
+    maxCount: {{ ocp4_workload_rag_escalation_workbench_gpu_count | int }}

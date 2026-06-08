@@ -27,6 +27,23 @@
   - openshift_cluster_ingress_domain is not defined
 
 # Create resources
+- name: Create GPU hardware profile
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'gpu-hardware-profile.yml.j2') | from_yaml }}"
+
+- name: Get GPU hardware profile resource version
+  kubernetes.core.k8s_info:
+    api_version: infrastructure.opendatahub.io/v1
+    kind: HardwareProfile
+    name: gpu-profile
+    namespace: redhat-ods-applications
+  register: r_gpu_profile
+
+- name: Set GPU profile resource version fact
+  set_fact:
+    gpu_profile_resource_version: "{{ r_gpu_profile.resources[0].metadata.resourceVersion }}"
+
 - name: Create PVC for workbench storage
   kubernetes.core.k8s:
     state: present

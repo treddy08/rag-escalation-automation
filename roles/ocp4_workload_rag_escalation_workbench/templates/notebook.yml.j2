@@ -10,7 +10,11 @@ metadata:
   annotations:
     notebooks.opendatahub.io/inject-auth: "true"
     notebooks.opendatahub.io/last-image-selection: training-hub-universal-cuda:3.4
+    notebooks.opendatahub.io/last-image-version-git-commit-selection: a66ec72
     opendatahub.io/image-display-name: Training | Jupyter | PyTorch | CUDA | Python
+    opendatahub.io/hardware-profile-name: gpu-profile
+    opendatahub.io/hardware-profile-namespace: redhat-ods-applications
+    opendatahub.io/hardware-profile-resource-version: "{{ gpu_profile_resource_version }}"
 spec:
   template:
     spec:
