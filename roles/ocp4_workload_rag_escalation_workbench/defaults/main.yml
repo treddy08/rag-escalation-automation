@@ -18,13 +18,12 @@ ocp4_workload_rag_escalation_workbench_git_branch: "main"
 # =============================================================================
 # Notebook Image Configuration
 # =============================================================================
-# Standard RHOAI workbench image with Python 3.12
-ocp4_workload_rag_escalation_workbench_notebook_image: "quay.io/opendatahub/workbench-images:jupyter-datascience-ubi9-python-3.12-20250605"
+# RHOAI Training Hub image with CUDA, PyTorch, Python 3.12
+ocp4_workload_rag_escalation_workbench_notebook_image: "image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/training-hub-universal-cuda:3.4"
 
-# Alternative images:
-# Python 3.11: quay.io/opendatahub/workbench-images:jupyter-datascience-ubi9-python-3.11-20250101
-# PyTorch with CUDA: quay.io/opendatahub/workbench-images:jupyter-pytorch-ubi9-python-3.12-20250605
-# TensorFlow with CUDA: quay.io/opendatahub/workbench-images:jupyter-tensorflow-ubi9-python-3.12-20250605
+# Alternative images from cluster:
+# PyTorch LLM Compressor: image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/jupyter-pytorch-llmcompressor:3.4
+# Minimal GPU: image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/minimal-gpu:1.2
 
 # =============================================================================
 # Storage Configuration
